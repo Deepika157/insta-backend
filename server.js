@@ -9,6 +9,13 @@ const port = 5000;
 
 app.use(cors()); 
 
+app.get("/", (req, res) => {
+    return res.json({
+        message: "Server is running",
+        version: "1.4.1"
+    });
+});
+
 const createSuccessResponse = (data, message) => ({
   success: true,
   message: message || 'Request successful',
@@ -20,15 +27,15 @@ const createErrorResponse = (message) => ({
   message: message || 'Request failed',
 });
 
-const  extractUserInfo = (meta) => {
-    console.log(meta);
+const  extractUserInfo = (data) => {
+    console.log(data);
   
     // Check if the data is valid
-    if (meta && meta.description && meta.title && meta.image) {
+    if (data && data.description && data.title && data.image) {
   
-      const description = meta.description;
-      const title = meta.title;
-      const imageUrl = meta.image.url;
+      const description = data.description;
+      const title = data.title;
+      const imageUrl = data.image.url;
   
       // Use regex to extract followers, following, and posts
       const followersMatch = description.match(/(\d+K?) Followers/);
@@ -77,12 +84,14 @@ app.get('/instagram/:username', (req, res) => {
 
     if (meta?.url) {
       console.log(meta);
-      return res.json(createSuccessResponse(null, extractUserInfo(meta)));
+      return res.json(createSuccessResponse(extractUserInfo(meta), 'sucessfully retrieved meta data'));
     } else {
       return res.json(createErrorResponse('Unable to retrieve Instagram data'));
     }
   });
 });
+
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
